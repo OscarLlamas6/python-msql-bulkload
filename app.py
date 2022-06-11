@@ -4,6 +4,7 @@ import traceback
 import pandas
 import time
 import os
+from datetime import datetime
 
 # Setting env variables
 load_dotenv()
@@ -38,8 +39,8 @@ class CLI():
                 createModel()
             if keyInput == "2":
                 loadData()
-            # if keyInput == "3":
-            #     Consultas()
+            if keyInput == "3":
+                 Query2()
             if keyInput == "4":
                 dropModel()
             if keyInput == "5" or keyInput.lower() == "exit":
@@ -47,7 +48,6 @@ class CLI():
                 exit()
             
                 
-
 def menu():
     print("\x1b[1;34m"+"\n+++++++++++++++++++++++++++ ELIGE UNA OPCION +++++++++++++++++++++++++++")
     print("\x1b[1;32m"+"1) CREAR MODELO (DDL)")
@@ -188,6 +188,9 @@ def loadData():
     df = pandas.DataFrame(csvData)
     df = df.fillna(value=0)
     myCursor = myDB.cursor()
+    # Select new Schema
+    myQuery = "USE Semi2DB"
+    myCursor.execute(myQuery)
     for row in df.itertuples(index=False):        
         myQuery = '''INSERT INTO TablaTemporal (artist, song, duration_ms, explicit, `year`,
         popularity, danceability, energy, `key`, loudness, `mode`, speechiness, acousticness,
@@ -265,160 +268,35 @@ def loadData():
     print("\x1b[1;33m"+"SE HAN CARGADO LOS DATOS EXITOSAMENTE :D")
     input("\x1b[1;31m"+"Presiona ENTER para continuar...")
     
-# def Consultas():
-#     cursor = conexion.cursor()
-#     #CONSULTA 1
-#     cursor.execute("select count(*) from alerta;")
-#     consulta1 = cursor.fetchone()
-#     #CONSULTA 2
-#     cursor.execute('''select * from (
-#                         select f.anio, u.pais, row_number() over(partition by f.anio ORDER BY u.pais) AS d from alerta a
-#                         inner join ubicacion u on u.id_ubicacion=a.id_ubicacion
-#                         inner join fecha f on f.id_fecha = a.id_fecha
-#                         where u.pais <> '0' and a.magnitud > 0
-#                         group by u.pais, f.anio 
-#                     ) S
-#                     pivot(
-#                         max(pais)
-#                         for [d] in ([1],[2],[3],[4],[5])
-#                     ) P''')
-#     consulta2 = cursor.fetchall()
-#     #CONSULTA 3
-#     cursor.execute('''select * from (
-#                         select u.pais, f.anio, row_number() over(partition by u.pais ORDER BY f.anio) AS d from alerta a
-#                         inner join ubicacion u on u.id_ubicacion=a.id_ubicacion
-#                         inner join fecha f on f.id_fecha = a.id_fecha
-#                         where u.pais <> '0' and a.magnitud > 0
-#                         group by f.anio, u.pais 
-#                     ) S
-#                     pivot(
-#                         max(anio)
-#                         for [d] in ([1],[2],[3],[4],[5])
-#                     ) P''')
-#     consulta3 = cursor.fetchall()
-#     #CONSULTA 4
-#     cursor.execute('''select u.pais, avg(a.danios) prom from alerta a
-#                         inner join ubicacion u on u.id_ubicacion = a.id_ubicacion
-#                         where a.danios > 0 
-#                         group by u.pais
-#                         order by prom desc
-#                         ;''')
-#     consulta4 = cursor.fetchall()
-#     #CONSULTA 5
-#     cursor.execute('''select top 5 u.pais, sum(a.muertes) suma from alerta a
-#                         inner join ubicacion u on a.id_ubicacion = u.id_ubicacion
-#                         group by u.pais order by suma desc;''')
-#     consulta5 = cursor.fetchall()
-#     #CONSULTA 6
-#     cursor.execute('''select top 5 f.anio, sum(a.muertes) as suma from alerta a
-#                         inner join fecha f on f.id_fecha = a.id_fecha
-#                         group by f.anio order by suma desc;''')
-#     consulta6 = cursor.fetchall()
-#     #CONSULTA 7
-#     cursor.execute('''select top 5 f.anio, count(*) as total from alerta a 
-#                         inner join fecha f on f.id_fecha = a.id_fecha 
-#                         where a.magnitud > 0 
-#                         group by f.anio
-#                         order by total desc;''')
-#     consulta7 = cursor.fetchall()
-#     #CONSULTA 8
-#     cursor.execute('''select top 5 u.pais, sum(a.casasdestruidas) as suma from alerta a
-#                         inner join ubicacion u on u.id_ubicacion = a.id_ubicacion
-#                         group by u.pais order by suma desc;''')
-#     consulta8 = cursor.fetchall()
-#     #CONSULTA 9
-#     cursor.execute('''select top 5 u.pais, sum(a.casasdañadas) as suma from alerta a
-#                         inner join ubicacion u on u.id_ubicacion = a.id_ubicacion
-#                         group by u.pais order by suma desc;''')
-#     consulta9 = cursor.fetchall()
-#     #CONSULTA 10
-#     cursor.execute('''select u.pais, avg(a.altura) prom from alerta as a
-#                         inner join ubicacion u on u.id_ubicacion = a.id_ubicacion
-#                         where a.altura > 0
-#                         group by u.pais
-#                         order by prom desc;''')
-#     consulta10 = cursor.fetchall()
-#     #-------------------------GENERANDO TXT--------------------------
-#     file = open("consultas.txt", "w")
-#     file.write("****************CONSULTA 1*********************"+os.linesep)
-#     file.write(str(consulta1[0])+os.linesep)
-#     file.write("****************CONSULTA 2*********************"+os.linesep)
-#     file.write("---ANIO---          -------------PAISES-----------\n")
-#     for dato in consulta2:
-#         file.write("-----------------------------------------------------------------\n")
-#         for pais in dato:
-#             if str(pais)!="None":
-#                 file.write(str(pais) + "\t")
-#             else:
-#                 file.write("    ")
-#         file.write("\n")
-#     file.write(os.linesep)
-#     file.write("****************CONSULTA 3*********************"+os.linesep)
-#     file.write("---PAIS---          ----------ANIOS-----------\n")
-#     for dato in consulta3:
-#         file.write("-----------------------------------------------------------------\n")
-#         for año in dato:
-#             if str(año)!="None":
-#                 file.write(str(año) + "\t")
-#             else:
-#                 file.write("    ")
-#         file.write("\n")
-#     file.write(os.linesep)
-#     file.write("****************CONSULTA 4*********************"+os.linesep)
-#     file.write("---PAIS---          --PROMEDIO--\n")
-#     for dato in consulta4:
-#         file.write("--------------------------------------------\n")
-#         file.write(str(dato[0])+"            "+str(dato[1])+"\n")
-#     file.write(os.linesep)
-#     file.write("****************CONSULTA 5*********************"+os.linesep)
-#     file.write("---PAIS---          --# MUERTES--\n")
-#     for dato in consulta5:
-#         file.write("--------------------------------------------\n")
-#         file.write(str(dato[0])+"            "+str(dato[1])+"\n")
-#     file.write(os.linesep)
-#     file.write("****************CONSULTA 6*********************"+os.linesep)
-#     file.write("---ANIOS---          --# MUERTES--\n")
-#     for dato in consulta6:
-#         file.write("--------------------------------------------\n")
-#         file.write(str(dato[0])+"            "+str(dato[1])+"\n")
-#     file.write(os.linesep)
-#     file.write("****************CONSULTA 7*********************"+os.linesep)
-#     file.write("---ANIOS---          --# TSUNAMIS--\n")
-#     for dato in consulta7:
-#         file.write("--------------------------------------------\n")
-#         file.write(str(dato[0])+"            "+str(dato[1])+"\n")
-#     file.write(os.linesep)
-#     file.write("****************CONSULTA 8*********************"+os.linesep)
-#     file.write("---PAIS---          --# CASAS DESTRUIDAS--\n")
-#     for dato in consulta8:
-#         file.write("--------------------------------------------\n")
-#         file.write(str(dato[0])+"            "+str(dato[1])+"\n")
-#     file.write(os.linesep)
-#     file.write("****************CONSULTA 9*********************"+os.linesep)
-#     file.write("---PAIS---          --# CASAS DANIADAS--\n")
-#     for dato in consulta9:
-#         file.write("--------------------------------------------\n")
-#         file.write(str(dato[0])+"            "+str(dato[1])+"\n")
-#     file.write(os.linesep)
-#     file.write("****************CONSULTA 10********************"+os.linesep)
-#     file.write("---PAIS---          --PROM. ALTURA MAXIMA--\n")
-#     for dato in consulta10:
-#         file.write("--------------------------------------------\n")
-#         file.write(str(dato[0])+"            "+str(dato[1])+"\n")
-#     file.write(os.linesep)
-#     file.close()
-#     cursor.close()
+def Query2():
+    try:
+        # Top 10 most played songs
+        myCursor = myDB.cursor()
+        # Select new Schema
+        myQuery = "USE Semi2DB"
+        myCursor.execute(myQuery)
+        myQuery = '''SELECT artist.name, SongsPlays.name, SongsPlays.Plays
+                    FROM (
+                    SELECT song.artistID AS artistID, song.name AS name, COUNT(record.songID) AS Plays FROM record
+                    INNER JOIN song ON record.songID = song.songID
+                    GROUP BY record.songID
+                    ) AS SongsPlays
+                    INNER JOIN artist ON SongsPlays.artistID = artist.artistID
+                    ORDER BY Plays DESC
+                    LIMIT 10'''
+        myCursor.execute(myQuery)     
+        myFile = open("consulta3.txt", "w")
+        print("------------ CONSULTA 3 ------------", file=myFile)
+        print(file=myFile)
+        for row in myCursor:
+            print(row, file=myFile)
+        myFile.close()
+        input("\x1b[1;31m"+"Presiona ENTER para continuar...")
+    except Exception as e: 
+        print(e)
+        print('Error al eliminar modelo :o')
+        input("\x1b[1;31m"+"Presiona ENTER para continuar...")
 
 
-# def EjSelect():
-#     cursor = conexion.cursor()#estamos creando un cursor para enviar el query
-#     cursor.execute("select * from fecha;")
-#     respuesta = cursor.fetchone()#Seleccione uno por uno (fetchall si quiero todo se recorre con un for)
-#     while respuesta:
-#         print(respuesta)
-#         respuesta = cursor.fetchone()
-    
-#     #poner que siempre se cierre el cursor para ahorrar recursos en python 
-#     cursor.close()
 
 myApp = CLI()
