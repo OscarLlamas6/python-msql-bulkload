@@ -40,21 +40,42 @@ class CLI():
             if keyInput == "2":
                 loadData()
             if keyInput == "3":
-                 Query2()
+                selectQuery()
             if keyInput == "4":
                 dropModel()
             if keyInput == "5" or keyInput.lower() == "exit":
                 print("\x1b[1;31m"+"\nHASTA LA PROXIMA :D")
                 exit()
-            
+
+def selectQuery():
+    while(True):
+        os.system('cls||clear')
+        print("\x1b[1;31m"+"------------------ SEMINARIO DE SISTEMAS 2: PRACTICA 1 -----------------")
+        print("\x1b[1;36m"+"---------------- OSCAR ALFREDO LLAMAS LEMUS - 201602625 ----------------")
+        queriesMenu()        
+        keyInput = input("\x1b[1;37m"+"")    
+        if keyInput == "1":
+            Query1()
+        if keyInput == "2":
+            Query2()
+        if keyInput == "11" or keyInput.lower() == "exit":
+            break            
                 
 def menu():
-    print("\x1b[1;34m"+"\n+++++++++++++++++++++++++++ ELIGE UNA OPCION +++++++++++++++++++++++++++")
+    print("\x1b[1;34m"+"\n---------------------------- ELIGE UNA OPCION ----------------------------")
     print("\x1b[1;32m"+"1) CREAR MODELO (DDL)")
     print("\x1b[1;33m"+"2) CARGAR INFORMACION (DML)")
     print("\x1b[1;35m"+"3) REALIZAR CONSULTAS (DML)")
     print("\x1b[1;31m"+"4) ELIMINAR MODELO (DDL)")
     print("\x1b[1;36m"+"5) SALIR\n")
+    print("\x1b[1;32m"+"USAC ", end='')
+    print("\x1b[1;33m"+"> ", end='')
+    
+def queriesMenu():
+    print("\x1b[1;34m"+"\n---------------------------- ELIGE UNA CONSULTA ----------------------------")
+    print("\x1b[1;35m"+"1) TOP 10 ARTISTAS CON MAYOR REPRODUCCIONES")
+    print("\x1b[1;32m"+"2) TOP 10 CANCIONES MAS REPRODUCIDAS") 
+    print("\x1b[1;36m"+"11) SALIR\n")
     print("\x1b[1;32m"+"USAC ", end='')
     print("\x1b[1;33m"+"> ", end='')
 
@@ -267,6 +288,36 @@ def loadData():
     myDB.commit()
     print("\x1b[1;33m"+"SE HAN CARGADO LOS DATOS EXITOSAMENTE :D")
     input("\x1b[1;31m"+"Presiona ENTER para continuar...")
+  
+def Query1():
+    try:
+        # Top 10 most played songs
+        myCursor = myDB.cursor()
+        # Select new Schema
+        myQuery = "USE Semi2DB"
+        myCursor.execute(myQuery)
+        myQuery = '''SELECT artist.name, COUNT(SongsPlays.name) AS Plays
+                    FROM (
+                    SELECT song.artistID AS artistID, song.name AS name FROM record
+                    INNER JOIN song ON record.songID = song.songID
+                    ) AS SongsPlays
+                    INNER JOIN artist ON SongsPlays.artistID = artist.artistID
+                    GROUP BY artist.name
+                    ORDER BY Plays DESC
+                    LIMIT 10'''
+        myCursor.execute(myQuery)     
+        myFile = open("consulta1.txt", "w")
+        print("------------ CONSULTA 1 ------------", file=myFile)
+        print(file=myFile)
+        for row in myCursor:
+            print(row, file=myFile)
+        myFile.close()
+        print("\x1b[1;33m"+"2) Reporte de consulta 1 generado exitosamente :D")
+        input("\x1b[1;31m"+"Presiona ENTER para continuar...")
+    except Exception as e: 
+        print(e)
+        print('Error al generar reporte :(')
+        input("\x1b[1;31m"+"Presiona ENTER para continuar...")    
     
 def Query2():
     try:
@@ -285,16 +336,17 @@ def Query2():
                     ORDER BY Plays DESC
                     LIMIT 10'''
         myCursor.execute(myQuery)     
-        myFile = open("consulta3.txt", "w")
-        print("------------ CONSULTA 3 ------------", file=myFile)
+        myFile = open("consulta2.txt", "w")
+        print("------------ CONSULTA 2 ------------", file=myFile)
         print(file=myFile)
         for row in myCursor:
             print(row, file=myFile)
         myFile.close()
+        print("\x1b[1;33m"+"2) Reporte de consulta 2 generado exitosamente :D")
         input("\x1b[1;31m"+"Presiona ENTER para continuar...")
     except Exception as e: 
         print(e)
-        print('Error al eliminar modelo :o')
+        print('Error al generar reporte :(')
         input("\x1b[1;31m"+"Presiona ENTER para continuar...")
 
 

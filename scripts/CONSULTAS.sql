@@ -1,3 +1,15 @@
+/* REPORTE 1: TOP 10 ARTISTAS CON MAYOR DEPRODUCION */
+
+SELECT artist.name, COUNT(SongsPlays.name) AS Plays
+FROM (
+SELECT song.artistID AS artistID, song.name AS name FROM record
+INNER JOIN song ON record.songID = song.songID
+) AS SongsPlays
+INNER JOIN artist ON SongsPlays.artistID = artist.artistID
+GROUP BY artist.name
+ORDER BY Plays DESC
+LIMIT 10;
+
 /* REPORTE 2: TOP 10 CANCIONES MAS REPRODUCIDAS */
 
 SELECT artist.name, SongsPlays.name, SongsPlays.Plays
