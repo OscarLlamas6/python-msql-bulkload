@@ -21,3 +21,14 @@ GROUP BY record.songID
 INNER JOIN artist ON SongsPlays.artistID = artist.artistID
 ORDER BY Plays DESC
 LIMIT 10;
+
+/* REPORTE 3: TOP 5 GENEROS MAS REPRODUCIDOS */
+
+SELECT `name`, COUNT(`name`) AS Plays FROM (
+	SELECT record.recordID, record.songID, SongGenreName.`name` AS `name` FROM (SELECT SongGenre.songID, Genre.genreID, Genre.name FROM SongGenre
+	INNER JOIN Genre ON SongGenre.genreID = Genre.genreID) AS SongGenreName
+	INNER JOIN record ON record.songID = SongGenreName.songID
+) AS RecordGenre
+GROUP BY `name` 
+ORDER BY Plays DESC 
+LIMIT 5;

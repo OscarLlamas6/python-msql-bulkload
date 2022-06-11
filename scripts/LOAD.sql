@@ -61,4 +61,5 @@ FROM (
 	   UNION ALL SELECT 3 UNION ALL SELECT 4) numbers INNER JOIN TablaTemporal
 	  ON CHAR_LENGTH(TablaTemporal.genre)
 		 -CHAR_LENGTH(REPLACE(TablaTemporal.genre, ',', ''))>=numbers.n-1
-) AS SongsGenres;
+) AS SongsGenres
+GROUP BY songID, genreID;
