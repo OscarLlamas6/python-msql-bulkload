@@ -66,6 +66,14 @@ def selectQuery():
             Query5()
         if keyInput == "6":
             Query6()
+        if keyInput == "7":
+            Query7()
+        if keyInput == "8":
+            Query8()
+        if keyInput == "9":
+            Query9()
+        if keyInput == "10":
+            Query10()
         if keyInput == "11" or keyInput.lower() == "exit":
             break            
                 
@@ -82,11 +90,15 @@ def menu():
 def queriesMenu():
     print("\x1b[1;34m"+"\n-------------------------- ELIGE UNA CONSULTA --------------------------")
     print("\x1b[1;35m"+"1) TOP 10 ARTISTAS CON MAYOR REPRODUCCIONES")
-    print("\x1b[1;32m"+"2) TOP 10 CANCIONES MAS REPRODUCIDAS") 
-    print("\x1b[1;33m"+"3) TOP 5 GENEROS MAS REPRODUCIDOS")
-    print("\x1b[1;31m"+"4) ARTISTA MAS REPRODUCIDO POR CADA GENERO")
-    print("\x1b[1;37m"+"5) LA CANCION MAS REPRODUCIDA POR CADA GENERO")
-    print("\x1b[1;35m"+"6) LA CANCION MAS REPRODUCIDA POR CADA AÑO DE LANZAMIENTO")
+    print("\x1b[1;32m"+"2) TOP 10 CANCIONES MÁS REPRODUCIDAS") 
+    print("\x1b[1;33m"+"3) TOP 5 GÉNEROS MÁS REPRODUCIDOS")
+    print("\x1b[1;31m"+"4) ARTISTA MÁS REPRODUCIDO POR CADA GÉNERO")
+    print("\x1b[1;37m"+"5) LA CANCIÓN MÁS REPRODUCIDA POR CADA GÉNERO")
+    print("\x1b[1;35m"+"6) LA CANCIÓN MÁS REPRODUCIDA POR CADA AÑO DE LANZAMIENTO")
+    print("\x1b[1;32m"+"7) TOP 10 ARTISTAS MÁS POPULARES")
+    print("\x1b[1;33m"+"8) TOP 10 CANCIONES MÁS POPULARES")
+    print("\x1b[1;34m"+"9) TOP 5 GÉNEROS MÁS POPULARES")
+    print("\x1b[1;31m"+"10) LA CANCIÓN MÁS EXPLICITA REPRODUCIDA POR CADA GÉNERO")
     print("\x1b[1;36m"+"11) SALIR\n")
     print("\x1b[1;32m"+"USAC ", end='')
     print("\x1b[1;33m"+"> ", end='')
@@ -334,7 +346,7 @@ def Query1():
             print(row, file=myFile)
         myCursor.close() 
         myFile.close()
-        print("\x1b[1;33m"+"2) Reporte de consulta 1 generado exitosamente :D")
+        print("\x1b[1;33m"+"Reporte de consulta 1 generado exitosamente :D")
         input("\x1b[1;31m"+"Presiona ENTER para continuar...")
     except Exception as e: 
         print(e)
@@ -365,7 +377,7 @@ def Query2():
             print(row, file=myFile)
         myCursor.close()
         myFile.close()
-        print("\x1b[1;33m"+"2) Reporte de consulta 2 generado exitosamente :D")
+        print("\x1b[1;33m"+"Reporte de consulta 2 generado exitosamente :D")
         input("\x1b[1;31m"+"Presiona ENTER para continuar...")
     except Exception as e: 
         print(e)
@@ -395,7 +407,7 @@ def Query3():
             print(row, file=myFile)
         myCursor.close()     
         myFile.close()
-        print("\x1b[1;33m"+"2) Reporte de consulta 3 generado exitosamente :D")
+        print("\x1b[1;33m"+"Reporte de consulta 3 generado exitosamente :D")
         input("\x1b[1;31m"+"Presiona ENTER para continuar...")
     except Exception as e: 
         print(e)
@@ -436,7 +448,7 @@ def Query4():
             print(row, file=myFile)
         myCursor.close()     
         myFile.close()
-        print("\x1b[1;33m"+"2) Reporte de consulta 4 generado exitosamente :D")
+        print("\x1b[1;33m"+"Reporte de consulta 4 generado exitosamente :D")
         input("\x1b[1;31m"+"Presiona ENTER para continuar...")
     except Exception as e: 
         print(e)
@@ -445,7 +457,7 @@ def Query4():
 
 def Query5():
     try:
-        # Most played artist by genre
+        # Most played track by genre
         myCursor = myDB.cursor()
         # Select new Schema
         myQuery = "USE Semi2DB"
@@ -478,7 +490,7 @@ def Query5():
             print(row, file=myFile)
         myCursor.close()     
         myFile.close()
-        print("\x1b[1;33m"+"2) Reporte de consulta 5 generado exitosamente :D")
+        print("\x1b[1;33m"+"Reporte de consulta 5 generado exitosamente :D")
         input("\x1b[1;31m"+"Presiona ENTER para continuar...")
     except Exception as e: 
         print(e)
@@ -487,7 +499,7 @@ def Query5():
 
 def Query6():
     try:
-        # Most played artist by genre
+        # Most played track by year
         myCursor = myDB.cursor()
         # Select new Schema
         myQuery = "USE Semi2DB"
@@ -517,7 +529,158 @@ def Query6():
             print(row, file=myFile)
         myCursor.close()     
         myFile.close()
-        print("\x1b[1;33m"+"2) Reporte de consulta 6 generado exitosamente :D")
+        print("\x1b[1;33m"+"Reporte de consulta 6 generado exitosamente :D")
+        input("\x1b[1;31m"+"Presiona ENTER para continuar...")
+    except Exception as e: 
+        print(e)
+        print('Error al generar reporte :(')
+        input("\x1b[1;31m"+"Presiona ENTER para continuar...")
+
+def Query7():
+    try:
+        # Top 10 popular artists
+        myCursor = myDB.cursor()
+        # Select new Schema
+        myQuery = "USE Semi2DB"
+        myCursor.execute(myQuery)
+        myQuery = '''SELECT artist.name, ArtistPopularity.popularityAVG AS popularityAVG
+                    FROM (
+                        SELECT song.artistID AS artistID, AVG(RecordPopularity.popularityAVG) AS popularityAVG
+                        FROM (
+                            SELECT songID, AVG(popularity) AS popularityAVG
+                            FROM record 
+                            GROUP BY  songID
+                        ) AS RecordPopularity
+                        INNER JOIN song ON RecordPopularity.songID = song.songID
+                        GROUP BY artistID
+                    ) AS ArtistPopularity
+                    INNER JOIN artist ON artist.artistID = ArtistPopularity.artistID
+                    ORDER BY ArtistPopularity.popularityAVG DESC
+                    LIMIT 10'''
+        myCursor.execute(myQuery)
+        myFile = open("consulta7.txt", "w")
+        print("------------ CONSULTA 7 ------------", file=myFile)
+        print(file=myFile)
+        for row in myCursor:
+            print(row, file=myFile)
+        myCursor.close()     
+        myFile.close()
+        print("\x1b[1;33m"+"Reporte de consulta 7 generado exitosamente :D")
+        input("\x1b[1;31m"+"Presiona ENTER para continuar...")
+    except Exception as e: 
+        print(e)
+        print('Error al generar reporte :(')
+        input("\x1b[1;31m"+"Presiona ENTER para continuar...")
+
+def Query8():
+    try:
+        # Top 10 popular tracks
+        myCursor = myDB.cursor()
+        # Select new Schema
+        myQuery = "USE Semi2DB"
+        myCursor.execute(myQuery)
+        myQuery = '''SELECT artist.name AS Artist, SongPopularity.name AS `Song`, SongPopularity.popularityAVG AS `Popularity Average`
+                    FROM (
+                        SELECT song.songID, song.artistID, song.name, AVG(popularity) AS popularityAVG
+                        FROM record 
+                        INNER JOIN song
+                        ON record.songID = song.songID
+                        GROUP BY songID
+                    ) AS SongPopularity
+                    INNER JOIN artist ON artist.artistID = SongPopularity.artistID
+                    ORDER BY SongPopularity.popularityAVG DESC
+                    LIMIT 10'''
+        myCursor.execute(myQuery)
+        myFile = open("consulta8.txt", "w")
+        print("------------ CONSULTA 8 ------------", file=myFile)
+        print(file=myFile)
+        for row in myCursor:
+            print(row, file=myFile)
+        myCursor.close()     
+        myFile.close()
+        print("\x1b[1;33m"+"Reporte de consulta 8 generado exitosamente :D")
+        input("\x1b[1;31m"+"Presiona ENTER para continuar...")
+    except Exception as e: 
+        print(e)
+        print('Error al generar reporte :(')
+        input("\x1b[1;31m"+"Presiona ENTER para continuar...")
+
+def Query9():
+    try:
+        # Top 5 popular genres
+        myCursor = myDB.cursor()
+        # Select new Schema
+        myQuery = "USE Semi2DB"
+        myCursor.execute(myQuery)
+        myQuery = '''SELECT GenrePopularityGroup.GenreName, GenrePopularityGroup.popularityAVG AS `Popularity Average`
+                    FROM (
+                        SELECT song.songID AS songID , song.artistID, song.name, AVG(SongsPopularityGenre.popularity) AS popularityAVG, SongsPopularityGenre.genre AS GenreName
+                        FROM (
+                            SELECT record.recordID AS recordID, record.songID AS songID, record.popularity AS popularity, SongGenreName.`name` AS genre 
+                            FROM (SELECT SongGenre.songID, Genre.genreID, Genre.name 
+                                FROM SongGenre
+                                INNER JOIN Genre 
+                                ON SongGenre.genreID = Genre.genreID) AS SongGenreName
+                            INNER JOIN record ON record.songID = SongGenreName.songID
+                        ) AS SongsPopularityGenre
+                        INNER JOIN song ON song.songID = SongsPopularityGenre.songID
+                        GROUP BY song.songID, GenreName
+                    ) AS GenrePopularityGroup
+                    GROUP BY GenrePopularityGroup.GenreName
+                    ORDER BY GenrePopularityGroup.popularityAVG DESC
+                    LIMIT 5;'''
+        myCursor.execute(myQuery)
+        myFile = open("consulta9.txt", "w")
+        print("------------ CONSULTA 9 ------------", file=myFile)
+        print(file=myFile)
+        for row in myCursor:
+            print(row, file=myFile)
+        myCursor.close()     
+        myFile.close()
+        print("\x1b[1;33m"+"Reporte de consulta 9 generado exitosamente :D")
+        input("\x1b[1;31m"+"Presiona ENTER para continuar...")
+    except Exception as e: 
+        print(e)
+        print('Error al generar reporte :(')
+        input("\x1b[1;31m"+"Presiona ENTER para continuar...")
+
+def Query10():
+    try:
+        # Most played explicit track by genre
+        myCursor = myDB.cursor()
+        # Select new Schema
+        myQuery = "USE Semi2DB"
+        myCursor.execute(myQuery)
+        myQuery = '''SELECT artist.name, IDArtistPlays.name, IDArtistPlays.GenreName, IDArtistPlays.TotalPlays
+                    FROM (
+                        SELECT SongGenreGroup.artistID, SongGenreGroup.name AS `name`, MAX(SongGenreGroup.Plays) AS TotalPlays, SongGenreGroup.GenreName
+                        FROM (
+                            SELECT song.songID AS songID , song.artistID, song.name, COUNT(SongsPlaysGenre.songID) AS Plays, SongsPlaysGenre.genre AS GenreName
+                            FROM (
+                                SELECT record.recordID AS recordID, record.songID AS songID, SongGenreName.`name` AS genre 
+                                FROM (SELECT SongGenre.songID, Genre.genreID, Genre.name 
+                                    FROM SongGenre
+                                    INNER JOIN Genre 
+                                    ON SongGenre.genreID = Genre.genreID) AS SongGenreName
+                                INNER JOIN record ON record.songID = SongGenreName.songID
+                            ) AS SongsPlaysGenre
+                            INNER JOIN song ON song.songID = SongsPlaysGenre.songID
+                            WHERE song.explicit = True
+                            GROUP BY song.songID, GenreName
+                        ) AS SongGenreGroup
+                    GROUP BY GenreName
+                    ORDER BY TotalPlays DESC
+                    ) AS IDArtistPlays
+                    INNER JOIN artist ON artist.artistID = IDArtistPlays.artistID'''
+        myCursor.execute(myQuery)
+        myFile = open("consulta10.txt", "w")
+        print("------------ CONSULTA 10 ------------", file=myFile)
+        print(file=myFile)
+        for row in myCursor:
+            print(row, file=myFile)
+        myCursor.close()     
+        myFile.close()
+        print("\x1b[1;33m"+"Reporte de consulta 10 generado exitosamente :D")
         input("\x1b[1;31m"+"Presiona ENTER para continuar...")
     except Exception as e: 
         print(e)

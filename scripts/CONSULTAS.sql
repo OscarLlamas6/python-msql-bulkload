@@ -97,3 +97,78 @@ FROM (
 	ORDER BY SongYearGroup.`year` ASC
 ) AS IDArtistPlays
 INNER JOIN artist ON artist.artistID = IDArtistPlays.artistID;
+
+/* REPORTE 7: TOP 10 ARTISTAS MAS POPULARES */
+
+SELECT artist.name, ArtistPopularity.popularityAVG AS popularityAVG
+	FROM (
+		SELECT song.artistID AS artistID, AVG(RecordPopularity.popularityAVG) AS popularityAVG
+		FROM (
+			SELECT songID, AVG(popularity) AS popularityAVG
+			FROM record 
+			GROUP BY  songID
+		) AS RecordPopularity
+		INNER JOIN song ON RecordPopularity.songID = song.songID
+		GROUP BY artistID
+	) AS ArtistPopularity
+	INNER JOIN artist ON artist.artistID = ArtistPopularity.artistID
+	ORDER BY ArtistPopularity.popularityAVG DESC
+    LIMIT 10;
+
+/* REPORTE 8: TOP 10 CANCIONES MAS POPULARES */
+
+SELECT artist.name AS Artist, SongPopularity.name AS `Song`, SongPopularity.popularityAVG AS `Popularity Average`
+FROM (
+	SELECT song.songID, song.artistID, song.name, AVG(popularity) AS popularityAVG
+	FROM record 
+    INNER JOIN song
+    ON record.songID = song.songID
+	GROUP BY songID
+) AS SongPopularity
+INNER JOIN artist ON artist.artistID = SongPopularity.artistID
+ORDER BY SongPopularity.popularityAVG DESC
+LIMIT 10;
+
+/* REPORTE 9: TOP 5 GENERO MAS POPULARES */
+
+SELECT GenrePopularityGroup.GenreName, GenrePopularityGroup.popularityAVG AS `Popularity Average`
+FROM (
+	SELECT song.songID AS songID , song.artistID, song.name, AVG(SongsPopularityGenre.popularity) AS popularityAVG, SongsPopularityGenre.genre AS GenreName
+	FROM (
+		SELECT record.recordID AS recordID, record.songID AS songID, record.popularity AS popularity, SongGenreName.`name` AS genre 
+		FROM (SELECT SongGenre.songID, Genre.genreID, Genre.name 
+			FROM SongGenre
+			INNER JOIN Genre 
+			ON SongGenre.genreID = Genre.genreID) AS SongGenreName
+		INNER JOIN record ON record.songID = SongGenreName.songID
+	) AS SongsPopularityGenre
+	INNER JOIN song ON song.songID = SongsPopularityGenre.songID
+	GROUP BY song.songID, GenreName
+) AS GenrePopularityGroup
+GROUP BY GenrePopularityGroup.GenreName
+ORDER BY GenrePopularityGroup.popularityAVG DESC
+LIMIT 5;	
+
+/* REPORTE 10: */
+
+SELECT artist.name, IDArtistPlays.name, IDArtistPlays.GenreName, IDArtistPlays.TotalPlays
+FROM (
+	SELECT SongGenreGroup.artistID, SongGenreGroup.name AS `name`, MAX(SongGenreGroup.Plays) AS TotalPlays, SongGenreGroup.GenreName
+	FROM (
+		SELECT song.songID AS songID , song.artistID, song.name, COUNT(SongsPlaysGenre.songID) AS Plays, SongsPlaysGenre.genre AS GenreName
+		FROM (
+			SELECT record.recordID AS recordID, record.songID AS songID, SongGenreName.`name` AS genre 
+			FROM (SELECT SongGenre.songID, Genre.genreID, Genre.name 
+				FROM SongGenre
+				INNER JOIN Genre 
+				ON SongGenre.genreID = Genre.genreID) AS SongGenreName
+			INNER JOIN record ON record.songID = SongGenreName.songID
+		) AS SongsPlaysGenre
+		INNER JOIN song ON song.songID = SongsPlaysGenre.songID
+        WHERE song.explicit = True
+		GROUP BY song.songID, GenreName
+	) AS SongGenreGroup
+GROUP BY GenreName
+ORDER BY TotalPlays DESC
+) AS IDArtistPlays
+INNER JOIN artist ON artist.artistID = IDArtistPlays.artistID;
