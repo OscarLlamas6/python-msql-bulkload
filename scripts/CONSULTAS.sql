@@ -42,7 +42,8 @@ FROM (
 	SELECT ArtistGenre.artistID, COUNT(ArtistGenre.artistID) AS Plays, ArtistGenre.genre
 			FROM (
 				SELECT song.artistID, RecordGenre.name AS genre FROM (
-				SELECT record.recordID AS recordID, record.songID AS songID, SongGenreName.`name` AS `name` FROM (SELECT SongGenre.songID, Genre.genreID, Genre.name FROM SongGenre
+				SELECT record.recordID AS recordID, record.songID AS songID, SongGenreName.`name` AS `name`
+                 FROM (SELECT SongGenre.songID, Genre.genreID, Genre.name FROM SongGenre
 				INNER JOIN Genre ON SongGenre.genreID = Genre.genreID) AS SongGenreName
 				INNER JOIN record ON record.songID = SongGenreName.songID
 				) AS RecordGenre
@@ -59,9 +60,11 @@ INNER JOIN artist ON artist.artistID = IDArtistPlays.artistID;
 
 SELECT artist.name, IDArtistPlays.name, IDArtistPlays.GenreName, IDArtistPlays.TotalPlays
 FROM (
-	SELECT SongGenreGroup.artistID, SongGenreGroup.name AS `name`, MAX(SongGenreGroup.Plays) AS TotalPlays, SongGenreGroup.GenreName
+	SELECT SongGenreGroup.artistID, SongGenreGroup.name AS `name`, MAX(SongGenreGroup.Plays) 
+    AS TotalPlays, SongGenreGroup.GenreName
 	FROM (
-		SELECT song.songID AS songID , song.artistID, song.name, COUNT(SongsPlaysGenre.songID) AS Plays, SongsPlaysGenre.genre AS GenreName
+		SELECT song.songID AS songID , song.artistID, song.name, COUNT(SongsPlaysGenre.songID) 
+        AS Plays, SongsPlaysGenre.genre AS GenreName
 		FROM (
 			SELECT record.recordID AS recordID, record.songID AS songID, SongGenreName.`name` AS genre 
 			FROM (SELECT SongGenre.songID, Genre.genreID, Genre.name 
@@ -82,9 +85,11 @@ INNER JOIN artist ON artist.artistID = IDArtistPlays.artistID;
 
 SELECT IDArtistPlays.`year`, artist.name, IDArtistPlays.name,  IDArtistPlays.TotalPlays
 FROM (
-	SELECT SongYearGroup.artistID, SongYearGroup.name AS `name`, MAX(SongYearGroup.Plays) AS TotalPlays, SongYearGroup.`year` AS `year`
+	SELECT SongYearGroup.artistID, SongYearGroup.name AS `name`, MAX(SongYearGroup.Plays) 
+    AS TotalPlays, SongYearGroup.`year` AS `year`
 	FROM (
-		SELECT song.songID AS songID , song.artistID, song.name, COUNT(SongsPlaysYear.songID) AS Plays, SongsPlaysYear.`year` AS `year`
+		SELECT song.songID AS songID , song.artistID, song.name, COUNT(SongsPlaysYear.songID)
+         AS Plays, SongsPlaysYear.`year` AS `year`
 		FROM (
 			SELECT record.recordID AS recordID, record.songID AS songID, song.`year` AS `year`
 			FROM song
@@ -133,9 +138,11 @@ LIMIT 10;
 
 SELECT GenrePopularityGroup.GenreName, GenrePopularityGroup.popularityAVG AS `Popularity Average`
 FROM (
-	SELECT song.songID AS songID , song.artistID, song.name, AVG(SongsPopularityGenre.popularity) AS popularityAVG, SongsPopularityGenre.genre AS GenreName
+	SELECT song.songID AS songID , song.artistID, song.name, AVG(SongsPopularityGenre.popularity) 
+    AS popularityAVG, SongsPopularityGenre.genre AS GenreName
 	FROM (
-		SELECT record.recordID AS recordID, record.songID AS songID, record.popularity AS popularity, SongGenreName.`name` AS genre 
+		SELECT record.recordID AS recordID, record.songID AS songID, record.popularity 
+        AS popularity, SongGenreName.`name` AS genre 
 		FROM (SELECT SongGenre.songID, Genre.genreID, Genre.name 
 			FROM SongGenre
 			INNER JOIN Genre 
@@ -153,9 +160,11 @@ LIMIT 5;
 
 SELECT artist.name, IDArtistPlays.name, IDArtistPlays.GenreName, IDArtistPlays.TotalPlays
 FROM (
-	SELECT SongGenreGroup.artistID, SongGenreGroup.name AS `name`, MAX(SongGenreGroup.Plays) AS TotalPlays, SongGenreGroup.GenreName
+	SELECT SongGenreGroup.artistID, SongGenreGroup.name AS `name`, MAX(SongGenreGroup.Plays) 
+    AS TotalPlays, SongGenreGroup.GenreName
 	FROM (
-		SELECT song.songID AS songID , song.artistID, song.name, COUNT(SongsPlaysGenre.songID) AS Plays, SongsPlaysGenre.genre AS GenreName
+		SELECT song.songID AS songID , song.artistID, song.name, COUNT(SongsPlaysGenre.songID) 
+        AS Plays, SongsPlaysGenre.genre AS GenreName
 		FROM (
 			SELECT record.recordID AS recordID, record.songID AS songID, SongGenreName.`name` AS genre 
 			FROM (SELECT SongGenre.songID, Genre.genreID, Genre.name 
